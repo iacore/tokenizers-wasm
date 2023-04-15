@@ -1,0 +1,12 @@
+lockfileVersion: '6.0'
+
+dependencies:
+  tokenizers-wasm:
+    specifier: 0.1.0
+    version: 0.1.0
+
+packages:
+
+  /tokenizers-wasm@0.1.0:
+    resolution: {integrity: sha512-XzddwtgiYwvzkN+6gqF7Ug/f6gMJJL3IkeGJgo5bkmm8Xms84EOms7FcGiKHAxYdM+Tv64OvZ7CFdb1ZZ4D71w==}
+    dev: false

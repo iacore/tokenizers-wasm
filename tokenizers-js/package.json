@@ -2,10 +2,12 @@
   "name": "huggingface-tokenizers-bindings",
   "version": "0.1.0",
   "description": "js bindings for huggingface tokenizers",
+  "type": "module",
   "module": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mithril-security/tokenizers-js.git"
+    "url": "git+https://github.com/iacore/tokenizers-wasm.git",
+    "directory": "tokenizers-js"
   },
   "keywords": [
     "webassembly",
