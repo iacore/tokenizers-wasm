@@ -1,5 +1,5 @@
 use js_sys;
-use std::{convert::TryInto, str::FromStr};
+use std::str::FromStr;
 use tokenizers::tokenizer::{Encoding, Tokenizer};
 use wasm_bindgen::prelude::*;
 
@@ -11,35 +11,36 @@ pub struct TokenizerWasm {
 #[wasm_bindgen]
 impl TokenizerWasm {
     #[wasm_bindgen(constructor)]
-    pub fn from_buffer(json: String) -> TokenizerWasm {
-        TokenizerWasm {
-            tokenizer: Tokenizer::from_str(json.as_str()).unwrap_throw().into(),
-        }
+    pub fn from_buffer(json: String) -> Result<TokenizerWasm, JsValue> {
+        Ok(TokenizerWasm {
+            tokenizer: Tokenizer::from_str(json.as_str()).map_err(|e| format!("{e}"))?,
+        })
     }
 
-    pub fn encode(&self, text: &str, add_special_tokens: bool) -> EncodingWasm {
-        EncodingWasm {
+    pub fn encode(&self, text: &str, add_special_tokens: bool) -> Result<EncodingWasm, JsValue> {
+        Ok(EncodingWasm {
             encoding: self
                 .tokenizer
                 .encode(text, add_special_tokens)
-                .unwrap_throw(),
-        }
+                .map_err(|e| format!("{e}"))?,
+        })
     }
 
-    pub fn decode(&self, tokens: js_sys::Object, skip_special_tokens: bool) -> String {
-        let it = tokens.dyn_ref::<js_sys::Iterator>().unwrap_throw();
-        let ids = it
-            .into_iter()
-            .map(|x| {
-                let x_f64 = x.unwrap_throw()
-                    .as_f64()
-                    .unwrap_throw();
-                x_f64 as u32
-            })
-            .collect();
-        self.tokenizer
+    pub fn decode(&self, tokens: &JsValue, skip_special_tokens: bool) -> Result<String, JsValue> {
+        let tokens = js_sys::try_iter(tokens)?.ok_or_else(|| "`tokens` is not a iterable")?;
+
+        let mut ids = vec![];
+
+        for tok in tokens.into_iter().map(|x| -> Result<_, JsValue> {
+            let x_f64 = x?.as_f64().ok_or_else(|| "iter: as f64")?;
+            Ok(x_f64 as u32)
+        }) {
+            ids.push(tok?);
+        }
+        Ok(self
+            .tokenizer
             .decode(ids, skip_special_tokens)
-            .unwrap_throw()
+            .map_err(|e| format!("{e}"))?)
     }
 }
 
