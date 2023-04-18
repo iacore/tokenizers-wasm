@@ -3,6 +3,11 @@ use std::str::FromStr;
 use tokenizers::tokenizer::{Encoding, Tokenizer};
 use wasm_bindgen::prelude::*;
 
+// Use `wee_alloc` as the global allocator.
+#[cfg(feature="wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 #[wasm_bindgen]
 pub struct TokenizerWasm {
     tokenizer: Tokenizer,
